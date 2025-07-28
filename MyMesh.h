@@ -1,6 +1,10 @@
 //MyMesh.h
+
+
 #pragma once
-#include "Common.h"
+
+class MyShader;   // forward declaration
+
 
 class MyMesh 
 {
@@ -8,16 +12,23 @@ class MyMesh
         MyMesh(const std::vector<float>& vertices);
         ~MyMesh();
 
-        void Draw() const;
+        void Draw(MyShader& shader) const;
         void Update(float deltaTime);
+
+        //Transform properties
+        glm::vec3 _tPosition = glm::vec3(0.0f);
+        glm::vec3 _tRotation = glm::vec3(0.0f); //degrees
+        glm::vec3 _tScale = glm::vec3(1.0f);
 
     private:
         GLuint _VAO, _VBO;
 
-        float _rotationAngle = 0.0f; // in degrees
 
-        std::vector<float> _originalVertices;
-        std::vector<float> _transformedVertices;
+        int _vertexCount = 0;
+        std::vector<float> _vertices;
 
-        void UpdateRotation();
+        mutable glm::mat4 _modelMatrix;
+
+        void UpdateModelMatrix();
+
 };

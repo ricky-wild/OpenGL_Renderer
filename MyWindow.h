@@ -1,7 +1,8 @@
 //MyWindow.h
+
+
 #pragma once
 #include "Common.h"
-
 class MyWindow 
 {
     public:
