@@ -9,6 +9,7 @@ class MyShader;   // forward declaration
 class MyMesh 
 {
     public:
+
         MyMesh(const std::vector<float>& vertices);
         ~MyMesh();
 
@@ -21,6 +22,7 @@ class MyMesh
         glm::vec3 _tScale = glm::vec3(1.0f);
 
     private:
+
         GLuint _VAO, _VBO;
 
 

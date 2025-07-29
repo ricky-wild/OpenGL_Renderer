@@ -9,24 +9,27 @@ MyWindow::MyWindow(int width, int height, const std::string& title)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-    if (!window) {
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); //Disable window resizing.
+
+    _window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+    if (!_window) 
+    {
         glfwTerminate();
         throw std::runtime_error("Failed to create GLFW window");
     }
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(_window);
     glfwSwapInterval(1);
 }
 
 MyWindow::~MyWindow() 
 {
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(_window);
     glfwTerminate();
 }
 
-bool MyWindow::ShouldClose() const 
+bool MyWindow::ShouldClose() const //Best practice: mark any accessor-getter func as const when it doesn’t need to change anything.
 {
-    return glfwWindowShouldClose(window);
+    return glfwWindowShouldClose(_window);
 }
 
 void MyWindow::PollEvents() const 
@@ -36,10 +39,10 @@ void MyWindow::PollEvents() const
 
 void MyWindow::SwapBuffers() const 
 {
-    glfwSwapBuffers(window);
+    glfwSwapBuffers(_window);
 }
 
 GLFWwindow* MyWindow::GetGLFWwindow() const 
 {
-    return window;
+    return _window;
 }

@@ -31,8 +31,7 @@ MyMesh::~MyMesh()
 void MyMesh::Update(float deltaTime)
 {
     _tRotation.y += deltaTime * 45.0f;
-    //_tRotation.y += 90.0f * deltaTime;  // or any animation
-    //if (_tRotation.y > 360.0f) _tRotation.y -= 360.0f;
+
 
     UpdateModelMatrix();
 }
