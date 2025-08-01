@@ -27,3 +27,6 @@
 #include "MyRenderer.h"
 #include "MyShader.h"
 #include "MyCamera.h"
+#include "MyBitmapFontRenderer.h"
+#include "MyMouseInput.h"
+#include "MyInputManager.h"

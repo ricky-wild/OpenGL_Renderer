@@ -8,10 +8,30 @@ MyMouseInput::MyMouseInput(GLFWwindow* window) : _window(window), _x(0), _y(0), 
 
 void MyMouseInput::Update(float deltaTime)
 {
-    glfwGetCursorPos(_window, &_x, &_y);
+    double currentX, currentY;
+    glfwGetCursorPos(_window, &currentX, &currentY);
+
+    if (_firstUpdate) 
+    {
+        _lastX = currentX;
+        _lastY = currentY;
+        _firstUpdate = false;
+    }
+
+    //Save current first and don't overwrite _last just yet.
+    _x = currentX;
+    _y = currentY;
+
     _leftClicked = glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     _middleClicked = glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS;
     _rightClicked = glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
+
+}
+
+void MyMouseInput::SetLastPositionToCurrent()
+{
+    _lastX = _x;
+    _lastY = _y;
 }
 
 bool MyMouseInput::AnyMouseButtonClicked()

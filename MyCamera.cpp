@@ -17,7 +17,8 @@ void MyCamera::SetPosition(const glm::vec3& position)
 void MyCamera::SetYawPitch(float yawDegrees, float pitchDegrees)
 {
     _yaw = yawDegrees;
-    _pitch = glm::clamp(pitchDegrees, -89.0f, 89.0f);
+    _pitch = glm::clamp(pitchDegrees, -89.0f, 89.0f); //clamp pitch between -89 and +89 to prevent gimbal lock & cam flip.
+    //_yaw = glm::clamp(_yaw, -90.0f, 90.0f);
     UpdateCameraVectors();
 }
 
@@ -29,6 +30,22 @@ glm::mat4 MyCamera::GetViewMatrix() const
 glm::mat4 MyCamera::GetProjectionMatrix() const
 {
     return glm::perspective(glm::radians(_fov), _aspect, _near, _far);
+}
+
+void MyCamera::ProcessMouseMovement(float deltaX, float deltaY, float sensitivity)
+{
+    _yaw += deltaX * sensitivity;
+    _yaw = glm::clamp(_yaw, -90.0f, 90.0f);
+    _pitch += deltaY * sensitivity;
+    _pitch = glm::clamp(_pitch, -89.0f, 89.0f);
+
+    UpdateCameraVectors();
+}
+
+void MyCamera::ResetCameraPoisition()
+{
+    SetPosition(glm::vec3(0.0f, 0.1f, 2.0f));
+    SetYawPitch(-90.0f, 0.0f);
 }
 
 void MyCamera::UpdateCameraVectors()

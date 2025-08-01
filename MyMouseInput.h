@@ -17,10 +17,18 @@ class MyMouseInput : public MyInputComponent
         bool IsRightClicked() const { return _rightClicked; }
         bool AnyMouseButtonClicked();
 
+
+        double GetDeltaX() const { return _x - _lastX; }
+        double GetDeltaY() const { return _y - _lastY; }
+        void SetLastPositionToCurrent();
+
     private:
         GLFWwindow* _window;
         double _x, _y;
         bool _leftClicked;
         bool _middleClicked;
         bool _rightClicked;
+        double _lastX = 0.0;
+        double _lastY = 0.0;
+        bool _firstUpdate = true;
 };

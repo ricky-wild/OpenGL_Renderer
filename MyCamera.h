@@ -10,15 +10,15 @@ class MyCamera
 
         MyCamera(float fovDegrees, float aspectRatio, float nearPlane, float farPlane);
 
-        glm::mat4 GetViewMatrix() const; //based on position & orientation
+        glm::mat4 GetViewMatrix() const; 
+        glm::mat4 GetProjectionMatrix() const; 
+        glm::vec3 GetPosition() const { return _position; };
 
-        glm::mat4 GetProjectionMatrix() const; //perspective
-
-        // Position and orientation
         void SetPosition(const glm::vec3& position);
         void SetYawPitch(float yawDegrees, float pitchDegrees);
 
-        glm::vec3 GetPosition() const { return _position; };
+        void ProcessMouseMovement(float deltaX, float deltaY, float sensitivity = 0.1f);
+        void ResetCameraPoisition();
 
     private:
 

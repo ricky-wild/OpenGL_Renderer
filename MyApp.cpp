@@ -52,6 +52,22 @@ void MyApp::Run()
             mouseX = _mouseInput->GetX(); //std::cout << "MouseInput: x=" << mouseX << ", y=" << mouseY << "\n";
             mouseY = _mouseInput->GetY();     
         }
+        if (_mouseInput->IsRightClicked())
+        {
+            
+
+            double dx = _mouseInput->GetDeltaX();
+            double dy = _mouseInput->GetDeltaY();
+
+            //std::cout << "dx: " << dx << ", dy: " << dy << std::endl;
+
+            _renderer->GetCamera().ProcessMouseMovement((float)dx, (float)-dy);  // Invert Y
+            _mouseInput->SetLastPositionToCurrent();
+        }
+        if (_mouseInput->IsLeftClicked())
+        {
+            _renderer->GetCamera().ResetCameraPoisition();
+        }
 
         _window->PollEvents();
         _renderer->Render(_deltaTime, _currentFPS, mouseX, mouseY);

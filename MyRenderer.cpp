@@ -54,6 +54,9 @@ MyRenderer::MyRenderer(MyWindow& window) : _camera(45.0f, _renderViewWidth / _re
 
     _fontRenderer->RenderText("Hello", 15, 30, 0.5f, glm::vec3(1, 1, 0));
     std::cerr << "RenderText successfully called!\n";
+
+    _camera.SetPosition(glm::vec3(0.0f, 0.1f, 2.0f));
+    _camera.SetYawPitch(-90.0f, 0.0f);
 }
 
 MyRenderer::~MyRenderer() 
@@ -77,6 +80,7 @@ void MyRenderer::InitGL()
     //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glEnable(GL_DEPTH_TEST);
+
 
 }
 
@@ -113,9 +117,9 @@ void MyRenderer::AddMesh(MyMesh* mesh)
 void MyRenderer::Update(float deltaTime)
 {
 
-
-    _camera.SetPosition(glm::vec3(0.0f, 0.1f, 2.0f));      
-    _camera.SetYawPitch(-90.0f, 0.0f);                   
+    //Removed for mouse input update changes.
+    //_camera.SetPosition(glm::vec3(0.0f, 0.1f, 2.0f));      
+    //_camera.SetYawPitch(-90.0f, 0.0f);                   
 
     for (MyMesh* mesh : _renderables)
         mesh->Update(deltaTime);

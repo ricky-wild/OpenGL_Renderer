@@ -23,6 +23,8 @@ class MyRenderer
 
         void AddMesh(MyMesh* mesh);
 
+        MyCamera& GetCamera() { return _camera; }
+
     private:
 
         void InitGL();
