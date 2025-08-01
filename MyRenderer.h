@@ -17,8 +17,8 @@ class MyRenderer
         MyRenderer(MyWindow& window);
         ~MyRenderer();
 
-        void Render(float dt, float fps);
-        void Draw(float fps);
+        void Render(float dt, float fps, float mouseX, float mouseY);
+        void Draw(float fps, float mouseX, float mouseY);
         void Update(float deltaTime);
 
         void AddMesh(MyMesh* mesh);
@@ -26,9 +26,9 @@ class MyRenderer
     private:
 
         void InitGL();
-        void InitTriangle();
+        void InitTriangles(int triCount);
 
-        std::vector<float> _triangleVertices;
+        std::vector<float> _triangleVertices; //vector is dynamic array provided c++ STL. v cool.
         std::vector<MyMesh*> _renderables;
 
         const float _renderViewWidth = 800.0f;
@@ -37,6 +37,15 @@ class MyRenderer
         MyShader* _shader;
         MyCamera _camera;
 
+
         MyBitmapFontRenderer* _fontRenderer;
         unsigned int _textShader;
+
+        std::string _fpsText;
+        std::string _mouseClickPosText;
+        static const char* _sBasicVertShaderPathStr;
+        static const char* _sBasicFragShaderPathStr;
+        static const char* _sTextVertShaderPathStr;
+        static const char* _sTextFragShaderPathStr;
+        static const char* _sFontShaderPathStr;
 };

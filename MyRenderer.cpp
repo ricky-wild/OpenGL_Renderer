@@ -3,6 +3,27 @@
 
 
 
+#ifdef _DEBUG
+const char* MyRenderer::_sBasicVertShaderPathStr = "x64/Debug/shaders/basic.vert";
+const char* MyRenderer::_sBasicFragShaderPathStr = "x64/Debug/shaders/basic.frag";
+const char* MyRenderer::_sTextVertShaderPathStr = "x64/Debug/shaders/TextShader.vert";
+const char* MyRenderer::_sTextFragShaderPathStr = "x64/Debug/shaders/TextShader.frag";
+const char* MyRenderer::_sFontShaderPathStr = "x64/Debug/textures/font_atlas_01.png";
+#else
+const char* MyRenderer::_sBasicVertShaderPathStr = "shaders/basic.vert";
+const char* MyRenderer::_sBasicFragShaderPathStr = "shaders/basic.frag";
+const char* MyRenderer::_sTextVertShaderPathStr = "shaders/TextShader.vert";
+const char* MyRenderer::_sTextFragShaderPathStr = "shaders/TextShader.frag";
+const char* MyRenderer::_sFontShaderPathStr = "textures/font_atlas_01.png";
+#endif
+
+
+
+
+
+
+
+
 
 MyRenderer::MyRenderer(MyWindow& window) : _camera(45.0f, _renderViewWidth / _renderViewHeight, 0.1f, 100.0f) // fov, aspect, near, far
 {
@@ -15,23 +36,20 @@ MyRenderer::MyRenderer(MyWindow& window) : _camera(45.0f, _renderViewWidth / _re
 
     InitGL();
 
-    //_shader = new MyShader("x64/Debug/shaders/basic.vert", "x64/Debug/shaders/basic.frag");
-    _shader = new MyShader("shaders/basic.vert", "shaders/basic.frag");  
-    InitTriangle();
+    _shader = new MyShader(_sBasicVertShaderPathStr, _sBasicFragShaderPathStr);
+    InitTriangles(10);
 
 
     unsigned int w = 512;
     unsigned int h = 512;
 
-    //MyShader* textShader = new MyShader("x64/Debug/shaders/TextShader.vert", "x64/Debug/shaders/TextShader.frag");
-    MyShader* textShader = new MyShader("shaders/TextShader.vert", "shaders/TextShader.frag");
+    MyShader* textShader = new MyShader(_sTextVertShaderPathStr, _sTextFragShaderPathStr);
     std::cerr << "Text shader successfully loaded man!\n";
 
     _fontRenderer = new MyBitmapFontRenderer(textShader, w, h);
     std::cerr << "Font renderer successfully initialized bro!\n";
 
-    //_fontRenderer->LoadFontTexture("x64/Debug/textures/font_atlas_01.png");
-    _fontRenderer->LoadFontTexture("textures/font_atlas_01.png");
+    _fontRenderer->LoadFontTexture(_sFontShaderPathStr);
     std::cerr << "Font texture successfully loaded dude!\n";
 
     _fontRenderer->RenderText("Hello", 15, 30, 0.5f, glm::vec3(1, 1, 0));
@@ -45,11 +63,13 @@ MyRenderer::~MyRenderer()
 
     _triangleVertices.clear();
 
+
     for (MyMesh* mesh : _renderables)
-        delete mesh;
+        delete mesh; //delete pointers.
     _renderables.clear();
 
     delete _fontRenderer;
+
 }
 
 void MyRenderer::InitGL()
@@ -61,9 +81,9 @@ void MyRenderer::InitGL()
 }
 
 
-void MyRenderer::InitTriangle()
+void MyRenderer::InitTriangles(int triCount)
 {
-    float vertPos = 0.15f;
+    float vertPos = 0.075f;
 
     //Simple triangle, 3 verts with x, y and z.
     _triangleVertices =
@@ -73,22 +93,21 @@ void MyRenderer::InitTriangle()
          vertPos, -vertPos, 0.0f    // bottom-right
     };
 
-    //Create mesh and add it to _renderables.
-    MyMesh* triangleMesh = new MyMesh(_triangleVertices);
+    int triangleMeshCount = triCount;
+    float pos = 0.06f;
 
+    for (int i = 0; i < triangleMeshCount; i++)
+    {
+        MyMesh* triangleMesh = new MyMesh(_triangleVertices); 
+        triangleMesh->_tPosition = glm::vec3(pos, 0.0f, pos);
+        AddMesh(triangleMesh);
+        pos += 0.06f; 
+    }
+}
 
-    vertPos = 0.20f;
-
-    MyMesh* triangleMesh2 = new MyMesh(_triangleVertices);
-    triangleMesh2->_tPosition = glm::vec3(-0.4f);
-
-
-    MyMesh* triangleMesh3 = new MyMesh(_triangleVertices);
-    triangleMesh3->_tPosition = glm::vec3(0.4f);
-
-    AddMesh(triangleMesh);
-    AddMesh(triangleMesh2);
-    AddMesh(triangleMesh3);
+void MyRenderer::AddMesh(MyMesh* mesh)
+{
+    _renderables.push_back(mesh);
 }
 
 void MyRenderer::Update(float deltaTime)
@@ -102,7 +121,7 @@ void MyRenderer::Update(float deltaTime)
         mesh->Update(deltaTime);
 }
 
-void MyRenderer::Draw(float fps)
+void MyRenderer::Draw(float fps, float mouseX, float mouseY)
 {
     //glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -111,8 +130,6 @@ void MyRenderer::Draw(float fps)
 
     _shader->Use();
 
-    //glm::mat4 view = glm::lookAt(glm::vec3(0, 0, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    //glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
     _shader->SetMat4("u_View", _camera.GetViewMatrix());
     _shader->SetMat4("u_Projection", _camera.GetProjectionMatrix());
@@ -122,21 +139,20 @@ void MyRenderer::Draw(float fps)
         mesh->Draw(*_shader);
     }
 
-    //_fontRenderer->RenderText("FPS:", 15, 30, 1.0f, glm::vec3(1, 1, 1));
-    std::string fpsText = "FPS: " + std::to_string(int(fps));
-    _fontRenderer->RenderText(fpsText, 15, 30, 1.0f, glm::vec3(1, 1, 1));
+
+    _fpsText = "FPS: " + std::to_string(int(fps));
+    _fontRenderer->RenderText(_fpsText, 15, 30, 1.0f, glm::vec3(1, 1, 1));
+
+    _mouseClickPosText = "Mouse X " + std::to_string(int(mouseX)) + " Y " + std::to_string(int(mouseY));
+    _fontRenderer->RenderText(_mouseClickPosText, 15, 490, 0.75f, glm::vec3(1, 1, 0));
 }
 
 
-void MyRenderer::Render(float deltaTime, float fps)
+void MyRenderer::Render(float deltaTime, float fps, float mouseX, float mouseY)
 {
 
     Update(deltaTime);
-    Draw(fps);
+    Draw(fps, mouseX, mouseY);
 
 }
 
-void MyRenderer::AddMesh(MyMesh* mesh)
-{
-    _renderables.push_back(mesh);
-}
