@@ -2,6 +2,7 @@
 #include "Common.h"
 #include <stdexcept>
 
+
 MyWindow::MyWindow(int width, int height, const std::string& title) 
 {
     if (!glfwInit()) throw std::runtime_error("Failed to initialize GLFW");
@@ -19,6 +20,8 @@ MyWindow::MyWindow(int width, int height, const std::string& title)
     }
     glfwMakeContextCurrent(_window);
     glfwSwapInterval(1);
+
+    //glfwSetScrollCallback(_window, &_renderer);
 }
 
 MyWindow::~MyWindow() 

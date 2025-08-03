@@ -12,3 +12,4 @@ void MyInputManager::Update(float deltaTime)
         input->Update(deltaTime);
 
 }
+

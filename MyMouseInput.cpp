@@ -28,6 +28,35 @@ void MyMouseInput::Update(float deltaTime)
 
 }
 
+void MyMouseInput::HandleInput(MyRenderer* renderer)
+{
+    double mouseX = GetX();
+    double mouseY = GetY();
+
+    if (AnyMouseButtonClicked()) 
+    {
+
+    }
+
+    if (IsRightClicked()) 
+    {
+        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        renderer->GetCamera().ProcessMouseMovement((float)GetDeltaX(), (float)-GetDeltaY());
+        SetLastPositionToCurrent();
+    }
+    else
+    {
+        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+
+    if (IsLeftClicked()) 
+    {
+        renderer->GetCamera().ResetCameraPoisition();
+    }
+
+
+}
+
 void MyMouseInput::SetLastPositionToCurrent()
 {
     _lastX = _x;

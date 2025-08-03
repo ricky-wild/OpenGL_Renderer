@@ -4,6 +4,13 @@
 #include "MyRenderer.h"
 
 
+//Static pointer & method required for openGL glfwSetScrollCallback() arg.
+static MyCamera* s_cameraPtr = nullptr;
+void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    if (s_cameraPtr) s_cameraPtr->ProcessMouseScroll(static_cast<float>(yoffset));
+}
+
 
 MyApp::MyApp()
 {
@@ -14,9 +21,14 @@ MyApp::MyApp()
 
     _renderer = new MyRenderer(*_window);
 
-    _inputManager = new MyInputManager();
+
+    //glfwSetScrollCallback() raw C-style function, which can’t access non-static members or lambdas with captures.
+    s_cameraPtr = &_renderer->GetCamera();
+    glfwSetScrollCallback(_window->GetGLFWwindow(), ScrollCallback);
+
+    //_inputManager = new MyInputManager();
     _mouseInput = new MyMouseInput(_window->GetGLFWwindow());
-    _inputManager->AddComponent(_mouseInput);
+    //_inputManager->AddComponent(_mouseInput);
 
 
     _lastTime = 0.0f;
@@ -30,7 +42,7 @@ MyApp::MyApp()
 MyApp::~MyApp()
 {
     delete _mouseInput;
-    delete _inputManager;
+    //delete _inputManager;
     delete _renderer;
     delete _window;
 }
@@ -39,38 +51,20 @@ void MyApp::Run()
 {
 
 
-    double mouseX = 0.0;
-    double mouseY = 0.0;
+    //double mouseX = 0.0;
+    //double mouseY = 0.0;
 
     while (!_window->ShouldClose())
     {
         CalculateFPS();
 
-        _inputManager->Update(_deltaTime);
-        if (_mouseInput->AnyMouseButtonClicked()) 
-        {
-            mouseX = _mouseInput->GetX(); //std::cout << "MouseInput: x=" << mouseX << ", y=" << mouseY << "\n";
-            mouseY = _mouseInput->GetY();     
-        }
-        if (_mouseInput->IsRightClicked())
-        {
-            
-
-            double dx = _mouseInput->GetDeltaX();
-            double dy = _mouseInput->GetDeltaY();
-
-            //std::cout << "dx: " << dx << ", dy: " << dy << std::endl;
-
-            _renderer->GetCamera().ProcessMouseMovement((float)dx, (float)-dy);  // Invert Y
-            _mouseInput->SetLastPositionToCurrent();
-        }
-        if (_mouseInput->IsLeftClicked())
-        {
-            _renderer->GetCamera().ResetCameraPoisition();
-        }
+        //_inputManager->Update(_deltaTime);
+        //_inputManager->HandleInput(_renderer);
+        _mouseInput->Update(_deltaTime);
+        _mouseInput->HandleInput(_renderer);
 
         _window->PollEvents();
-        _renderer->Render(_deltaTime, _currentFPS, mouseX, mouseY);
+        _renderer->Render(_deltaTime, _currentFPS, _mouseInput->GetX(), _mouseInput->GetY());
         _window->SwapBuffers();
     }
 }

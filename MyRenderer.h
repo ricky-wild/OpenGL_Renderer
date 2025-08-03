@@ -39,12 +39,16 @@ class MyRenderer
         MyShader* _shader;
         MyCamera _camera;
 
+        //unsigned int _batchVAO = 0;
+        //unsigned int _batchVBO = 0;
+        //int _totalVertices = 0;
 
         MyBitmapFontRenderer* _fontRenderer;
         unsigned int _textShader;
 
         std::string _fpsText;
         std::string _mouseClickPosText;
+        std::string _trisRenderedCountText;
         static const char* _sBasicVertShaderPathStr;
         static const char* _sBasicFragShaderPathStr;
         static const char* _sTextVertShaderPathStr;

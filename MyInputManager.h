@@ -11,6 +11,8 @@ class MyInputManager
         void AddComponent(MyInputComponent* input);
         void Update(float deltaTime);
 
+        
+
     private:
         std::vector<MyInputComponent*> _inputs;
 

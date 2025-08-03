@@ -5,6 +5,9 @@
 MyCamera::MyCamera(float fovDegrees, float aspectRatio, float nearPlane, float farPlane)
     : _fov(fovDegrees), _aspect(aspectRatio), _near(nearPlane), _far(farPlane)
 {
+    _targetPitch = _pitch;
+    _targetYaw = _yaw;
+    _smoothingFactor = 0.5f;
     UpdateCameraVectors();
 }
 
@@ -34,12 +37,37 @@ glm::mat4 MyCamera::GetProjectionMatrix() const
 
 void MyCamera::ProcessMouseMovement(float deltaX, float deltaY, float sensitivity)
 {
-    _yaw += deltaX * sensitivity;
-    _yaw = glm::clamp(_yaw, -90.0f, 90.0f);
-    _pitch += deltaY * sensitivity;
-    _pitch = glm::clamp(_pitch, -89.0f, 89.0f);
+    //_yaw += deltaX * sensitivity;
+    //_yaw = glm::clamp(_yaw, -90.0f, 90.0f);
+    //_pitch += deltaY * sensitivity;
+    //_pitch = glm::clamp(_pitch, -89.0f, 89.0f);
+
+    _targetYaw += deltaX * sensitivity;
+    _targetYaw = glm::clamp(_targetYaw, -90.0f, 90.0f);
+
+    _targetPitch += deltaY * sensitivity;
+    _targetPitch = glm::clamp(_targetPitch, -89.0f, 89.0f);
+
+    //UpdateCameraVectors();
+}
+
+void MyCamera::Update(float deltaTime)
+{
+    //Smoothly reach destined target.
+
+    _yaw = glm::mix(_yaw, _targetYaw, _smoothingFactor);
+    _pitch = glm::mix(_pitch, _targetPitch, _smoothingFactor);
+
 
     UpdateCameraVectors();
+}
+
+void MyCamera::ProcessMouseScroll(float yOffset)
+{
+    _fov -= yOffset;
+    if (_fov < 1.0f) _fov = 1.0f;
+    if (_fov > 90.0f) _fov = 90.0f;
+
 }
 
 void MyCamera::ResetCameraPoisition()

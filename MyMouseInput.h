@@ -10,6 +10,8 @@ class MyMouseInput : public MyInputComponent
         MyMouseInput(GLFWwindow* window);
         void Update(float deltaTime) override;
 
+        void HandleInput(MyRenderer* renderer);
+
         double GetX() const { return _x; }
         double GetY() const { return _y; }
         bool IsLeftClicked() const { return _leftClicked; }

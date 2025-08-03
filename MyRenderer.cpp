@@ -17,15 +17,19 @@ const char* MyRenderer::_sTextFragShaderPathStr = "shaders/TextShader.frag";
 const char* MyRenderer::_sFontShaderPathStr = "textures/font_atlas_01.png";
 #endif
 
+//const char* MyRenderer::_sBasicVertShaderPathStr = "shaders/basic.vert";
+//const char* MyRenderer::_sBasicFragShaderPathStr = "shaders/basic.frag";
+//const char* MyRenderer::_sTextVertShaderPathStr = "shaders/TextShader.vert";
+//const char* MyRenderer::_sTextFragShaderPathStr = "shaders/TextShader.frag";
+//const char* MyRenderer::_sFontShaderPathStr = "textures/font_atlas_01.png";
+
+
+const int TRI_COUNT = 1000;
 
 
 
 
-
-
-
-
-MyRenderer::MyRenderer(MyWindow& window) : _camera(45.0f, _renderViewWidth / _renderViewHeight, 0.1f, 100.0f) // fov, aspect, near, far
+MyRenderer::MyRenderer(MyWindow& window) : _camera(45.0f, _renderViewWidth / _renderViewHeight, 0.1f, 250.0f) // fov, aspect, near, far
 {
     glfwMakeContextCurrent(window.GetGLFWwindow());
 
@@ -37,11 +41,11 @@ MyRenderer::MyRenderer(MyWindow& window) : _camera(45.0f, _renderViewWidth / _re
     InitGL();
 
     _shader = new MyShader(_sBasicVertShaderPathStr, _sBasicFragShaderPathStr);
-    InitTriangles(10);
+    InitTriangles(TRI_COUNT);
 
 
-    unsigned int w = 512;
-    unsigned int h = 512;
+    unsigned int w = 800;
+    unsigned int h = 600;
 
     MyShader* textShader = new MyShader(_sTextVertShaderPathStr, _sTextFragShaderPathStr);
     std::cerr << "Text shader successfully loaded man!\n";
@@ -56,13 +60,11 @@ MyRenderer::MyRenderer(MyWindow& window) : _camera(45.0f, _renderViewWidth / _re
     std::cerr << "RenderText successfully called!\n";
 
     _camera.SetPosition(glm::vec3(0.0f, 0.1f, 2.0f));
-    _camera.SetYawPitch(-90.0f, 0.0f);
+    _camera.SetYawPitch(90.0f, 0.0f);
 }
 
 MyRenderer::~MyRenderer() 
 {
-    //delete _triangleMesh;
-
 
     _triangleVertices.clear();
 
@@ -77,7 +79,7 @@ MyRenderer::~MyRenderer()
 
 void MyRenderer::InitGL()
 {
-    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 
@@ -98,15 +100,70 @@ void MyRenderer::InitTriangles(int triCount)
     };
 
     int triangleMeshCount = triCount;
-    float pos = 0.06f;
+    float x = 0.1f;
+    float y = 0.03f;
+    float z = 0.05f;
 
     for (int i = 0; i < triangleMeshCount; i++)
     {
         MyMesh* triangleMesh = new MyMesh(_triangleVertices); 
-        triangleMesh->_tPosition = glm::vec3(pos, 0.0f, pos);
+        triangleMesh->_tPosition = glm::vec3(x, y, z);
         AddMesh(triangleMesh);
-        pos += 0.06f; 
+        x += 0.1f; 
+        
+        
+        if (i <= triangleMeshCount / 2)
+        {
+            y += 0.05f;
+            z -= 0.05f;
+        }
+        else
+        {
+            y -= 0.1f;
+            z += 0.05f;
+        }
+
+
+        
     }
+
+    //float vertPos = 0.075f;
+    //std::vector<float> vertices;
+    //vertices.reserve(triCount * 3 * 3); // 3 vertices per triangle, 3 floats per vertex
+
+    //float x = 0.0f;
+    //float y = 0.0f;
+    //float z = 0.0f;
+
+    //for (int i = 0; i < triCount; ++i)
+    //{
+    //    // Triangle vertices offset by position
+    //    vertices.push_back(x + 0.0f);       vertices.push_back(y + vertPos); vertices.push_back(z + 0.0f);
+    //    vertices.push_back(x - vertPos);    vertices.push_back(y - vertPos); vertices.push_back(z + 0.0f);
+    //    vertices.push_back(x + vertPos);    vertices.push_back(y - vertPos); vertices.push_back(z + 0.0f);
+
+    //    // Change position for next triangle
+    //    x += 0.1f;
+    //    y += (i <= triCount / 2) ? 0.01f : -0.01f;
+    //    z -= 0.1f;
+    //}
+
+    //_totalVertices = triCount * 3;
+
+    //// Create and bind VAO and VBO
+    //glGenVertexArrays(1, &_batchVAO);
+    //glGenBuffers(1, &_batchVBO);
+
+    //glBindVertexArray(_batchVAO);
+    //glBindBuffer(GL_ARRAY_BUFFER, _batchVBO);
+    //glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+    //// Setup vertex attrib pointer
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    //glEnableVertexAttribArray(0);
+
+    //// Unbind VAO
+    //glBindVertexArray(0);
 }
 
 void MyRenderer::AddMesh(MyMesh* mesh)
@@ -115,14 +172,12 @@ void MyRenderer::AddMesh(MyMesh* mesh)
 }
 
 void MyRenderer::Update(float deltaTime)
-{
-
-    //Removed for mouse input update changes.
-    //_camera.SetPosition(glm::vec3(0.0f, 0.1f, 2.0f));      
-    //_camera.SetYawPitch(-90.0f, 0.0f);                   
+{             
 
     for (MyMesh* mesh : _renderables)
         mesh->Update(deltaTime);
+
+    _camera.Update(deltaTime);
 }
 
 void MyRenderer::Draw(float fps, float mouseX, float mouseY)
@@ -143,12 +198,33 @@ void MyRenderer::Draw(float fps, float mouseX, float mouseY)
         mesh->Draw(*_shader);
     }
 
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //_shader->Use();
+
+    //_shader->SetMat4("u_View", _camera.GetViewMatrix());
+    //_shader->SetMat4("u_Projection", _camera.GetProjectionMatrix());
+
+    //glBindVertexArray(_batchVAO);
+
+    //_shader->SetMat4("u_Model", glm::mat4(1.0f));
+
+    //glDrawArrays(GL_TRIANGLES, 0, _totalVertices);
+
+    //glBindVertexArray(0);
+
+
 
     _fpsText = "FPS: " + std::to_string(int(fps));
     _fontRenderer->RenderText(_fpsText, 15, 30, 1.0f, glm::vec3(1, 1, 1));
 
     _mouseClickPosText = "Mouse X " + std::to_string(int(mouseX)) + " Y " + std::to_string(int(mouseY));
-    _fontRenderer->RenderText(_mouseClickPosText, 15, 490, 0.75f, glm::vec3(1, 1, 0));
+    _fontRenderer->RenderText(_mouseClickPosText, 15, 570, 0.75f, glm::vec3(1, 1, 0));
+
+    _trisRenderedCountText = "Trangles Rendered " + std::to_string(int(TRI_COUNT));
+    _fontRenderer->RenderText(_trisRenderedCountText, 15, 550, 0.75f, glm::vec3(0, 1, 0));
 }
 
 

@@ -31,6 +31,7 @@ class MyApp
         MyWindow* _window;       //pointers allow for forward declarations
         MyRenderer* _renderer;
 
+
         MyInputManager* _inputManager;
         MyMouseInput* _mouseInput;
 };
