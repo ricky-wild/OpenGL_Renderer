@@ -10,7 +10,7 @@ class MyMouseInput : public MyInputComponent
         MyMouseInput(GLFWwindow* window);
         void Update(float deltaTime) override;
 
-        void HandleInput(MyRenderer* renderer);
+        void HandleInput(MyMeshRenderer* meshRenderer);
 
         double GetX() const { return _x; }
         double GetY() const { return _y; }

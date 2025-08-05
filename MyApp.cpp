@@ -1,8 +1,11 @@
 
 #include "MyApp.h"
 #include "MyWindow.h"
-#include "MyRenderer.h"
+#include "MyMeshRenderer.h"
+#include "MyQuadRenderer.h"
+#include "MyGlyphRenderer.h"
 
+const int TRI_COUNT = 500;
 
 //Static pointer & method required for openGL glfwSetScrollCallback() arg.
 static MyCamera* s_cameraPtr = nullptr;
@@ -19,16 +22,17 @@ MyApp::MyApp()
 
     glfwSwapInterval(0); // Disable V-Sync for uncapped FPS. 1 enable the cap.
 
-    _renderer = new MyRenderer(*_window);
+    _meshRenderer = new MyMeshRenderer(*_window, 45.0f, 200.0f, TRI_COUNT);
+    //_quadRenderer = new MyQuadRenderer(*_window, 45.0f, 200.0f);
+    _glyphRenderer = new MyGlyphRenderer(*_window, 45.0f, 200.0f);
+    _quadRenderer = new MyQuadRenderer(*_window, 45.0f, 200.0f);
+    s_cameraPtr = &_meshRenderer->GetCamera();
 
-
-    //glfwSetScrollCallback() raw C-style function, which can’t access non-static members or lambdas with captures.
-    s_cameraPtr = &_renderer->GetCamera();
     glfwSetScrollCallback(_window->GetGLFWwindow(), ScrollCallback);
 
-    //_inputManager = new MyInputManager();
+    
     _mouseInput = new MyMouseInput(_window->GetGLFWwindow());
-    //_inputManager->AddComponent(_mouseInput);
+    
 
 
     _lastTime = 0.0f;
@@ -43,7 +47,9 @@ MyApp::~MyApp()
 {
     delete _mouseInput;
     //delete _inputManager;
-    delete _renderer;
+    delete _meshRenderer;
+    delete _quadRenderer;
+    delete _glyphRenderer;
     delete _window;
 }
 
@@ -58,13 +64,27 @@ void MyApp::Run()
     {
         CalculateFPS();
 
-        //_inputManager->Update(_deltaTime);
-        //_inputManager->HandleInput(_renderer);
+
         _mouseInput->Update(_deltaTime);
-        _mouseInput->HandleInput(_renderer);
+        _mouseInput->HandleInput(_meshRenderer);
+        //_mouseInput->HandleInput(_meshRenderer, _quadRenderer, _glyphRenderer);
 
         _window->PollEvents();
-        _renderer->Render(_deltaTime, _currentFPS, _mouseInput->GetX(), _mouseInput->GetY());
+
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glEnable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        _meshRenderer->Render(_deltaTime);
+        _glyphRenderer->Render(_deltaTime, _currentFPS, _mouseInput->GetX(), _mouseInput->GetY(), TRI_COUNT);
+        _quadRenderer->Render(_deltaTime);
+
+
+        //glBindVertexArray(0);
+        //glBindBuffer(GL_ARRAY_BUFFER, 0);
+
         _window->SwapBuffers();
     }
 }

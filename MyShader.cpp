@@ -42,6 +42,12 @@ void MyShader::SetVec3(const std::string& name, const glm::vec3& value) const
     glUniform3f(location, value.x, value.y, value.z);
 }
 
+void MyShader::SetInt(const std::string& name, int value) const
+{
+    glUniform1i(glGetUniformLocation(_id, name.c_str()), value);
+}
+
+
 std::string MyShader::LoadShaderSource(const std::string& filePath)
 {
     std::ifstream file(filePath);
@@ -51,6 +57,10 @@ std::string MyShader::LoadShaderSource(const std::string& filePath)
     {
         std::cerr << "Failed to open shader file bro: MyShader::LoadShaderSource()" << filePath << std::endl;
         return "";
+    }
+    else
+    {
+        std::cerr << "Successfully loaded - MyShader::LoadShaderSource() " << filePath << std::endl;
     }
 
     buffer << file.rdbuf();
@@ -72,6 +82,10 @@ unsigned int MyShader::CompileShader(unsigned int type, const std::string& sourc
         char infoLog[512];
         glGetShaderInfoLog(shader, 512, nullptr, infoLog);
         std::cerr << "Shader linking failed dude: MyShader::CompileShader()\n" << infoLog << std::endl;
+    }
+    else
+    {
+        std::cerr << "Shader linking success! MyShader::CompileShader()\n" << std::endl;
     }
 
     return shader;

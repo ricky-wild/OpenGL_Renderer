@@ -4,7 +4,10 @@
 
 //Forward declarations.
 class MyWindow;   
-class MyRenderer; 
+//class MyRenderer; 
+class MyMeshRenderer;
+class MyQuadRenderer;
+class MyGlyphRenderer;
 class MyMouseInput;
 class MyInputManager;
 
@@ -28,9 +31,11 @@ class MyApp
 
         void CalculateFPS();
 
-        MyWindow* _window;       //pointers allow for forward declarations
-        MyRenderer* _renderer;
-
+        //forward declarations
+        MyWindow* _window;      
+        MyQuadRenderer* _quadRenderer;
+        MyMeshRenderer* _meshRenderer;
+        MyGlyphRenderer* _glyphRenderer;
 
         MyInputManager* _inputManager;
         MyMouseInput* _mouseInput;

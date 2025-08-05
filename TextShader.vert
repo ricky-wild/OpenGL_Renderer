@@ -1,5 +1,9 @@
 #version 330 core
-layout (location = 0) in vec4 vertex; // (pos.xy, tex.xy)
+layout (location = 1) in vec4 vertex; // (pos.xy, tex.xy)
+
+//location 1 instead of 0 so we don't mix up with texture mesh location 0
+//glEnableVertexAttribArray(1);
+//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
 
 out vec2 TexCoords;
 
