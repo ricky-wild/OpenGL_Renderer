@@ -28,7 +28,7 @@ void MyMouseInput::Update(float deltaTime)
 
 }
 
-void MyMouseInput::HandleInput(MyMeshRenderer* meshRenderer)
+void MyMouseInput::HandleInput(MyCamera* camera)
 {
     double mouseX = GetX();
     double mouseY = GetY();
@@ -41,7 +41,7 @@ void MyMouseInput::HandleInput(MyMeshRenderer* meshRenderer)
     if (IsRightClicked()) 
     {
         glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        meshRenderer->GetCamera().ProcessMouseMovement((float)GetDeltaX(), (float)-GetDeltaY());
+        camera->ProcessMouseMovement((float)GetDeltaX(), (float)-GetDeltaY());
         SetLastPositionToCurrent();
     }
     else
@@ -51,7 +51,7 @@ void MyMouseInput::HandleInput(MyMeshRenderer* meshRenderer)
 
     if (IsLeftClicked()) 
     {
-        meshRenderer->GetCamera().ResetCameraPoisition();
+        camera->ResetCameraPoisition();
     }
 
 

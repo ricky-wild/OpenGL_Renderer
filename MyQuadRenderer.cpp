@@ -1,4 +1,6 @@
+
 #include "MyQuadRenderer.h"
+#include "MyTextureManager.h"
 #include "stb_image.h"
 
 
@@ -14,7 +16,7 @@ const char* MyQuadRenderer::_sTextureFilePathStr = "textures/tex.png";
 
 
 
-MyQuadRenderer::MyQuadRenderer(MyWindow& window, float FOV, float FAR) : _camera(FOV, _renderViewWidth / _renderViewHeight, 0.1f, FAR) // fov, aspect, near, far
+MyQuadRenderer::MyQuadRenderer(MyWindow& window, float FOV, float FAR)// : _camera(FOV, _renderViewWidth / _renderViewHeight, 0.1f, FAR) // fov, aspect, near, far
 {
     glfwMakeContextCurrent(window.GetGLFWwindow());
 
@@ -27,7 +29,7 @@ MyQuadRenderer::MyQuadRenderer(MyWindow& window, float FOV, float FAR) : _camera
     //glEnable(GL_DEPTH_TEST);
 
     _shader = new MyShader(_sTextureVertShaderPathStr, _sTextureFragShaderPathStr);
-    InitQuad(); 
+    //InitQuad(); 
 
 }
 
@@ -41,7 +43,16 @@ MyQuadRenderer::~MyQuadRenderer()
 
 }
 
-void MyQuadRenderer::InitQuad()
+//void MyQuadRenderer::InitQuad()
+//{
+//    AddQuad(glm::vec3(1.0f, 0.0f, -1.0f),
+//            glm::vec3(0.0f, 0.0f, 0.0f),
+//            glm::vec3(1.0f, 1.0f, 1.0f));
+//}
+
+void MyQuadRenderer::AddQuad(const glm::vec3& pos,
+                            const glm::vec3& rot,
+                            const glm::vec3& scale)
 {
     float vertSize = 0.75f;
 
@@ -56,7 +67,6 @@ void MyQuadRenderer::InitQuad()
         -vertSize, -vertSize, 0.0f,  //bottom left
         -vertSize,  vertSize, 0.0f   //top left
     };
-
     std::vector<float> fullTex = 
     {
         0.0f, 1.0f,  //top left
@@ -68,22 +78,23 @@ void MyQuadRenderer::InitQuad()
         0.0f, 1.0f   //top left
     };
 
-    unsigned int texID = LoadTexture(_sTextureFilePathStr);
+    GLuint texID = MyTextureManager::GetTexture(_sTextureFilePathStr);
+    //unsigned int texID = LoadTexture(_sTextureFilePathStr);
 
-    std::cout << "Texture ID: " << texID << "\n";
+    MyMesh* quad = new MyMesh(fullVerts, fullTex, RenderMode::Textured);
+    quad->SetTexture(texID);
+    quad->_tPosition = pos;
+    quad->_tRotation = rot;
+    quad->_tScale = scale;
 
-
-    MyMesh* texturedQuad = new MyMesh(fullVerts, fullTex, RenderMode::Textured);
-    texturedQuad->SetTexture(texID);
-
-    AddMesh(texturedQuad);
-
+    AddMesh(quad);
 
 }
 
 void MyQuadRenderer::AddMesh(MyMesh* mesh)
 {
     _renderables.push_back(mesh);
+    std::cout << "Quad texture mesh added." << "\n";
 }
 
 void MyQuadRenderer::Update(float deltaTime)
@@ -92,10 +103,10 @@ void MyQuadRenderer::Update(float deltaTime)
     for (MyMesh* mesh : _renderables)
         mesh->Update(deltaTime);
 
-    _camera.Update(deltaTime);
+    //_camera.Update(deltaTime);
 }
 
-void MyQuadRenderer::Draw()
+void MyQuadRenderer::Draw(const glm::mat4 &viewMatrix, const glm::mat4& projMatrix)
 {
     //glClear(GL_COLOR_BUFFER_BIT);
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -111,8 +122,8 @@ void MyQuadRenderer::Draw()
     {
         
         _shader->Use();
-        _shader->SetMat4("u_View", _camera.GetViewMatrix());
-        _shader->SetMat4("u_Projection", _camera.GetProjectionMatrix());
+        _shader->SetMat4("u_View", viewMatrix);
+        _shader->SetMat4("u_Projection", projMatrix);
 
         mesh->Draw(*_shader);
     }
@@ -122,11 +133,11 @@ void MyQuadRenderer::Draw()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void MyQuadRenderer::Render(float deltaTime)
+void MyQuadRenderer::Render(float deltaTime, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 {
 
     Update(deltaTime);
-    Draw();
+    Draw(viewMatrix, projMatrix);
 
 }
 

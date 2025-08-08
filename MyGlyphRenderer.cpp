@@ -52,7 +52,7 @@ MyGlyphRenderer::~MyGlyphRenderer()
 
 
 
-void MyGlyphRenderer::Draw(float fps, float mouseX, float mouseY, int triCount)
+void MyGlyphRenderer::Draw(float fps, float mouseX, float mouseY, int triCount, int quadCount)
 {
     //glClear(GL_COLOR_BUFFER_BIT);
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -69,14 +69,18 @@ void MyGlyphRenderer::Draw(float fps, float mouseX, float mouseY, int triCount)
     _trisRenderedCountText = "Triangle-Mesh Rendered: " + std::to_string(triCount);
     _fontRenderer->RenderText(_trisRenderedCountText, 15, 550, 0.75f, glm::vec3(1, 0.6, 0.1));
 
-    _quadRenderedCountText = "Textured Quad-Mesh Rendered: " + std::to_string(1);
+    _quadRenderedCountText = "Textured Quad-Mesh Rendered: " + std::to_string(quadCount);
     _fontRenderer->RenderText(_quadRenderedCountText, 15, 530, 0.75f, glm::vec3(1, 0.6, 0));
+
+    //_mouseControlHelpText
+    _mouseControlHelpText = "Control Help: Mouse Wheel to ZOOM. Mouse Right Clickhold to ROTATE.";
+    _fontRenderer->RenderText(_mouseControlHelpText, 15, 50, 0.75f, glm::vec3(1, 1, 1));
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void MyGlyphRenderer::Render(float deltaTime, float fps, float mouseX, float mouseY, int triCount)
+void MyGlyphRenderer::Render(float deltaTime, float fps, float mouseX, float mouseY, int triCount, int quadCount)
 {
-    Draw(fps, mouseX, mouseY, triCount);
+    Draw(fps, mouseX, mouseY, triCount, quadCount);
 }

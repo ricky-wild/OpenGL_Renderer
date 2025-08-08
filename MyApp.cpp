@@ -5,7 +5,8 @@
 #include "MyQuadRenderer.h"
 #include "MyGlyphRenderer.h"
 
-const int TRI_COUNT = 500;
+const int TRI_MESH_COUNT = 500;
+const int QUAD_MESH_COUNT = 100;//50;
 
 //Static pointer & method required for openGL glfwSetScrollCallback() arg.
 static MyCamera* s_cameraPtr = nullptr;
@@ -18,19 +19,48 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 MyApp::MyApp()
 {
 
-    _window = new MyWindow(800, 600, "wildlogicgames - opengl app");
+    _window = new MyWindow(_winWidth, _winHeight, "wildlogicgames - opengl app");
+
+    float FOV = 90.0f; //45.0f;
+    float nearPlane = 0.1f;
+    float farPlane = 200.0f;
+    _camera = new MyCamera(FOV, _winWidth / _winHeight, nearPlane, farPlane);
 
     glfwSwapInterval(0); // Disable V-Sync for uncapped FPS. 1 enable the cap.
 
-    _meshRenderer = new MyMeshRenderer(*_window, 45.0f, 200.0f, TRI_COUNT);
-    //_quadRenderer = new MyQuadRenderer(*_window, 45.0f, 200.0f);
+    _meshRenderer = new MyMeshRenderer(*_window, 45.0f, 200.0f, TRI_MESH_COUNT);
     _glyphRenderer = new MyGlyphRenderer(*_window, 45.0f, 200.0f);
+
+    float Scale = 1.0f;
+    float PosX = -1.0f;
+    float PosY = 0.0f;
+    float PosZ = 0.0f;
     _quadRenderer = new MyQuadRenderer(*_window, 45.0f, 200.0f);
-    s_cameraPtr = &_meshRenderer->GetCamera();
 
-    glfwSetScrollCallback(_window->GetGLFWwindow(), ScrollCallback);
+    for (int i = 0; i < QUAD_MESH_COUNT; i++)
+    {
+        _quadRenderer->AddQuad({ PosX, PosY, PosZ }, { 0.0f, 0.0f, 0.0f }, { Scale, Scale, Scale });
+        
+        if (i < QUAD_MESH_COUNT / 2)
+        {
+            PosX += 0.5f;
+            PosZ -= 2.0f;
+            PosY += 0.5f;
+        }
+        else
+        {
+            PosX += 0.5f;
+            PosZ += 2.0f;
+            PosY -= 0.5f;
+        }
+    }
 
-    
+
+
+
+
+    s_cameraPtr = _camera;
+    glfwSetScrollCallback(_window->GetGLFWwindow(), ScrollCallback);   
     _mouseInput = new MyMouseInput(_window->GetGLFWwindow());
     
 
@@ -56,19 +86,13 @@ MyApp::~MyApp()
 void MyApp::Run()
 {
 
-
-    //double mouseX = 0.0;
-    //double mouseY = 0.0;
-
     while (!_window->ShouldClose())
     {
         CalculateFPS();
 
 
         _mouseInput->Update(_deltaTime);
-        _mouseInput->HandleInput(_meshRenderer);
-        //_mouseInput->HandleInput(_meshRenderer, _quadRenderer, _glyphRenderer);
-
+        _mouseInput->HandleInput(_camera);
         _window->PollEvents();
 
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -77,13 +101,13 @@ void MyApp::Run()
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        _meshRenderer->Render(_deltaTime);
-        _glyphRenderer->Render(_deltaTime, _currentFPS, _mouseInput->GetX(), _mouseInput->GetY(), TRI_COUNT);
-        _quadRenderer->Render(_deltaTime);
+        _meshRenderer->Render(_deltaTime, _camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+        _quadRenderer->Render(_deltaTime, _camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+        _glyphRenderer->Render(_deltaTime, _currentFPS, _mouseInput->GetX(), _mouseInput->GetY(), TRI_MESH_COUNT, QUAD_MESH_COUNT);
+        
 
+        _camera->Update(_deltaTime);
 
-        //glBindVertexArray(0);
-        //glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         _window->SwapBuffers();
     }

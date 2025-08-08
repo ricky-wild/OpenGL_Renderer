@@ -1,9 +1,11 @@
+
+
 #pragma once
 //#include "Common.h"
 #include "MyWindow.h"
 #include "MyMesh.h"
 #include "MyShader.h"
-#include "MyCamera.h"
+//#include "MyCamera.h"
 
 class MyQuadRenderer
 {
@@ -12,18 +14,20 @@ class MyQuadRenderer
         MyQuadRenderer(MyWindow& window, float FOV, float FAR);
         ~MyQuadRenderer();
 
-        void Render(float dt);
+        void Render(float dt, const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
+        void AddQuad(const glm::vec3& pos,
+                    const glm::vec3& rot = glm::vec3(0.0f),
+                    const glm::vec3& scale = glm::vec3(1.0f));
 
-
-        MyCamera& GetCamera() { return _camera; }
+        //MyCamera& GetCamera() { return _camera; }
 
     private:
 
     
         unsigned int LoadTexture(const std::string& path);
 
-        void InitQuad();
-        void Draw();
+        //void InitQuad();
+        void Draw(const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
         void Update(float deltaTime);
         void AddMesh(MyMesh* mesh);
     
@@ -39,6 +43,6 @@ class MyQuadRenderer
         static const char* _sTextureFilePathStr;
 
         MyShader* _shader;
-        MyCamera _camera;
+        //MyCamera _camera;
 
 };

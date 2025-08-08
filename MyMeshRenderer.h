@@ -3,7 +3,7 @@
 #include "MyWindow.h"
 #include "MyMesh.h"
 #include "MyShader.h"
-#include "MyCamera.h"
+//#include "MyCamera.h"
 
 class MyMeshRenderer
 {
@@ -12,17 +12,17 @@ class MyMeshRenderer
         MyMeshRenderer(MyWindow& window, float FOV, float FAR, int triangleCount);
         ~MyMeshRenderer();
 
-        void Render(float deltaTime);
+        void Render(float deltaTime, const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
 
 
-        MyCamera& GetCamera() { return _camera; }
+        //MyCamera& GetCamera() { return _camera; }
 
     private:
 
 
 
         void InitTriangles(int triCount);
-        void Draw();
+        void Draw(const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
         void Update(float deltaTime);
         void AddMesh(MyMesh* mesh);
 
@@ -38,6 +38,6 @@ class MyMeshRenderer
 
 
         MyShader* _shader;
-        MyCamera _camera;
+        //MyCamera _camera;
 
 };

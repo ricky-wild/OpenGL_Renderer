@@ -4,7 +4,7 @@
 
 //Forward declarations.
 class MyWindow;   
-//class MyRenderer; 
+class MyCamera;
 class MyMeshRenderer;
 class MyQuadRenderer;
 class MyGlyphRenderer;
@@ -28,11 +28,14 @@ class MyApp
         float _timeAccumulator;
         float _currentFPS;
         int _frameCount;
+        const float _winWidth = 800.0f; 
+        const float _winHeight = 600.0f;
 
         void CalculateFPS();
 
         //forward declarations
-        MyWindow* _window;      
+        MyWindow* _window; 
+        MyCamera* _camera;
         MyQuadRenderer* _quadRenderer;
         MyMeshRenderer* _meshRenderer;
         MyGlyphRenderer* _glyphRenderer;

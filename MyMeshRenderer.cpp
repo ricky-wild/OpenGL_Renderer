@@ -10,7 +10,7 @@ const char* MyMeshRenderer::_sBasicFragShaderPathStr = "shaders/basic.frag";
 
 
 
-MyMeshRenderer::MyMeshRenderer(MyWindow& window, float FOV, float FAR, int triangleCount) : _camera(FOV, _renderViewWidth / _renderViewHeight, 0.1f, FAR) // fov, aspect, near, far
+MyMeshRenderer::MyMeshRenderer(MyWindow& window, float FOV, float FAR, int triangleCount)// : _camera(FOV, _renderViewWidth / _renderViewHeight, 0.1f, FAR) // fov, aspect, near, far
 {
     glfwMakeContextCurrent(window.GetGLFWwindow());
 
@@ -92,10 +92,10 @@ void MyMeshRenderer::Update(float deltaTime)
     for (MyMesh* mesh : _renderables)
         mesh->Update(deltaTime);
 
-    _camera.Update(deltaTime);
+    //_camera.Update(deltaTime);
 }
 
-void MyMeshRenderer::Draw()
+void MyMeshRenderer::Draw(const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 {
 
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -106,8 +106,8 @@ void MyMeshRenderer::Draw()
     {
 
         _shader->Use();
-        _shader->SetMat4("u_View", _camera.GetViewMatrix());
-        _shader->SetMat4("u_Projection", _camera.GetProjectionMatrix());
+        _shader->SetMat4("u_View", viewMatrix);
+        _shader->SetMat4("u_Projection", projMatrix);
 
         mesh->Draw(*_shader);
     }
@@ -118,8 +118,8 @@ void MyMeshRenderer::Draw()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void MyMeshRenderer::Render(float deltaTime)
+void MyMeshRenderer::Render(float deltaTime, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 {
     Update(deltaTime);
-    Draw();
+    Draw(viewMatrix, projMatrix);
 }

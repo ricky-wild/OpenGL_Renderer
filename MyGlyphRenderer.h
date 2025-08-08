@@ -13,7 +13,7 @@ class MyGlyphRenderer
         MyGlyphRenderer(MyWindow& window, float FOV, float FAR);
         ~MyGlyphRenderer();
 
-        void Render(float deltaTime, float fps, float mouseX, float mouseY, int triCount);
+        void Render(float deltaTime, float fps, float mouseX, float mouseY, int triCount, int quadCount);
 
         MyCamera& GetCamera() { return _camera; }
 
@@ -22,7 +22,7 @@ class MyGlyphRenderer
         MyCamera _camera;
         const float _renderViewWidth = 800.0f;
         const float _renderViewHeight = 600.0f;
-        void Draw(float fps, float mouseX, float mouseY, int triCount);
+        void Draw(float fps, float mouseX, float mouseY, int triCount, int quadCount);
 
         MyBitmapFontRenderer* _fontRenderer;
         unsigned int _textShader;
@@ -31,6 +31,7 @@ class MyGlyphRenderer
         std::string _mouseClickPosText;
         std::string _trisRenderedCountText;
         std::string _quadRenderedCountText;
+        std::string _mouseControlHelpText;
 
         static const char* _sTextVertShaderPathStr;
         static const char* _sTextFragShaderPathStr;
